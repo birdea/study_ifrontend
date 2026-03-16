@@ -43,18 +43,18 @@ const Content: React.FC = () => {
     );
   }
 
-  if (activePage === 'figma1') {
+  if (activePage === 'figma.page.1') {
     return (
       <div className="centered-content">
-        <h1>the result of figma 1 process</h1>
+        <h1>the result of figma.page.1 process</h1>
       </div>
     );
   }
 
-  if (activePage === 'figma2') {
+  if (activePage === 'figma.page.2') {
     return (
       <div className="centered-content">
-        <h1>the result of figma 2 process</h1>
+        <h1>the result of figma.page.2 process</h1>
       </div>
     );
   }

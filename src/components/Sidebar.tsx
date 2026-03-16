@@ -22,16 +22,16 @@ const Sidebar: React.FC = () => {
           Good Bye
         </button>
         <button 
-          className={`nav-btn ${activePage === 'figma1' ? 'active' : ''}`}
-          onClick={() => setActivePage('figma1')}
+          className={`nav-btn ${activePage === 'figma.page.1' ? 'active' : ''}`}
+          onClick={() => setActivePage('figma.page.1')}
         >
-          figma1
+          figma.page.1
         </button>
         <button 
-          className={`nav-btn ${activePage === 'figma2' ? 'active' : ''}`}
-          onClick={() => setActivePage('figma2')}
+          className={`nav-btn ${activePage === 'figma.page.2' ? 'active' : ''}`}
+          onClick={() => setActivePage('figma.page.2')}
         >
-          figma2
+          figma.page.2
         </button>
       </nav>
     </aside>
