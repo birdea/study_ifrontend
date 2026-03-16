@@ -1,0 +1,115 @@
+@import 'variables';
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.status-layer {
+  height: $header-height;
+  background-color: $header-bg;
+  border-bottom: 1px solid rgba($text-muted, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 100;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  .logo {
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+    color: $primary-light;
+    text-transform: uppercase;
+  }
+}
+
+.sidebar-layer {
+  width: $sidebar-width;
+  background-color: $sidebar-bg;
+  border-right: 1px solid rgba($text-muted, 0.2);
+  display: flex;
+  flex-direction: column;
+  transition: transform $transition-speed $transition-ease, width $transition-speed $transition-ease;
+  overflow: hidden;
+  z-index: 90;
+
+  &.folded {
+    width: 0;
+    transform: translateX(-100%);
+  }
+
+  .sidebar-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    text-align: left;
+    font-weight: 500;
+    color: $text-muted;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.1);
+      color: $text-color;
+    }
+
+    &.active {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+}
+
+.content-layer {
+  flex: 1;
+  position: relative;
+  background-color: $bg-color;
+  overflow-y: auto;
+  transition: margin-left $transition-speed $transition-ease;
+}
+
+.toggle-btn {
+  position: absolute;
+  left: 1rem;
+  top: calc(#{$header-height} + 1rem);
+  z-index: 101;
+  background: $primary-color;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  
+  &:hover {
+    transform: scale(1.1);
+    background: $primary-light;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
