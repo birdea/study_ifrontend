@@ -5,6 +5,8 @@ description: Optimized development directive for Antigravity (Gemini) agent to w
 
 # Figma MCP GUI Generation Skill
 
+> **⚠️ DOCUMENT LANGUAGE POLICY:** This document MUST strictly be written and maintained in **English only**. Do not use translation or add Korean/other languages.
+
 This skill provides an optimized workflow and directive for the Antigravity agent when tasked with generating highly detailed React/GUI layout code using data provided by the Figma MCP (Model Context Protocol). It synthesizes rules to prevent context window limitations, token pollution, and mistranslation of design data.
 
 When asked to implement code based on Figma MCP data, strictly follow these phases and rules.
@@ -47,31 +49,28 @@ When tool outputs conflict, resolve them using this priority:
 
 ## Phase 4: Data Refinement & Translation (Zero-Noise)
 Analyze the raw design data and extract essentials before and during coding. **To prevent context window limits and data pollution, you must proactively filter the MCP data.**
+The goal is to focus purely on visual rendering needs, removing all Figma-dependent structures.
 
-1. **Data Filtering & Pre-processing (Flatten & Clean)**:
-   - Identify and discard non-essential metadata: prototyping properties, editor info, hidden layers, and unnecessary system IDs.
-   - Flatten the node tree: Remove meaningless groups or wrapper frames (e.g., a group wrapping a single text block) to create a cleaner, semantic HTML/DOM structure.
-   - **Crucial Directive**: "Focus purely on visual rendering based on the refined data."
-2. **Translate `get_design_context` safely**:
-   - The output often includes Tailwind or raw JSX. **Do not copy it directly.** Extract the values only.
-   - For `var(--token, fallback)`: **Use the fallback value.**
-   - Unregistered Figma variables like `var(--surface/...)` must not appear in the final code.
-3. **Units and Typography**:
-   - Convert all `px` to `rem` (assume `16px = 1rem`).
-   - Extract `font-weight`, `font-size`, `line-height`, and `letter-spacing` from `Font(...)` comments.
-   - Normalize `font-weight: normal` to `400` and `font-weight: bold` to `700`.
-4. **Asset & Icon Rules**:
-   - Never use Figma local asset URLs (e.g., `http://localhost:3845/...`).
-   - **Substitution Priority**:
-     1. MUI Icons (if standard icon)
-     2. Inline SVG (if custom icon missing from MUI)
-     3. CSS `background-image` with inline SVG (for decorative assets only).
-5. **Clean Dependencies**:
-   - Explicitly remove `data-node-id`, `data-name`, and Tailwind classes (unless the project strictly mandates Tailwind, in which case confirm before proceeding) from the final generated code.
+1.  **Data Filtering & Pre-processing (Flatten & Clean)**:
+    -   **Remove System IDs & Attributes**: Strip out internal Figma identifier attributes such as `data-node-id` and `data-name`.
+    -   **Exclude Editor Info & Hidden Layers**: Ignore Prototyping properties or any layer data marked as hidden.
+    -   **Remove Meaningless Wrappers**: Flatten unnecessary layers in the DOM structure, such as empty groups or frames that only wrap a single text element.
+    -   **Crucial Directive**: "Only preserve the essential CSS values and DOM tree required for pure visual rendering."
+2.  **Translate `get_design_context` safely**:
+    -   **Do not copy-paste raw code**: Do not directly copy raw Tailwind classes or JSX code from the MCP response. Extract only the necessary values and rewrite them to fit the target environment (e.g., Vanilla CSS).
+    -   **Unregistered Figma Variables**: Token variables that are internal to Figma and not declared in the project (like `var(--surface/...)`) must not appear in the actual code. Apply a **Fallback Value** instead.
+3.  **Units and Typography**:
+    -   **Unit Conversion**: Convert absolute units like `px` into relative units like `rem` (e.g., 16px = 1rem).
+    -   **Font Normalization**: Extract info from the `Font(...)` comments. Normalize `font-weight: normal` to `400` and `bold` to `700` according to standard development practices.
+4.  **Asset & Icon Rules**:
+    -   **No Local Asset URLs**: Never use temporary Figma local asset URLs like `http://localhost:3845/...`. They will break in the actual service.
+    -   **Provide Alternatives**: For standard icons, prioritize using MUI icons. Otherwise, cleanly substitute them with inline SVGs or CSS components.
+5.  **Clean Dependencies**:
+    -   Verify that the final generated code is entirely free from project-rule-violating Tailwind classes and any traces of Figma-dependent data.
 
 ## Phase 5: Task Decomposition
-- **Bottom-Up Construction**: Start by creating small artifacts or components (Buttons, Badges) utilizing the refined values.
-- Compose these smaller pieces into large layout sections (Headers, Lists).
+-   **Bottom-Up Construction**: Start by creating small artifacts or components (Buttons, Badges) utilizing the refined values.
+-   Compose these smaller pieces into large layout sections (Headers, Lists).
 
 ## Verification Checklist
 Before completing the task, verify:
