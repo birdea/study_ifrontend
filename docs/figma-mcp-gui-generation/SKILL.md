@@ -46,23 +46,27 @@ When tool outputs conflict, resolve them using this priority:
 - **`get_metadata`**: Primary truth for DOM hierarchy, reusability grouping, and layout structuring (e.g., identical `y` values = row, identical `x` = col, equal margins = center alignment).
 
 ## Phase 4: Data Refinement & Translation (Zero-Noise)
-Analyze the raw design data and extract essentials before and during coding.
+Analyze the raw design data and extract essentials before and during coding. **To prevent context window limits and data pollution, you must proactively filter the MCP data.**
 
-1. **Translate `get_design_context` safely**:
+1. **Data Filtering & Pre-processing (Flatten & Clean)**:
+   - Identify and discard non-essential metadata: prototyping properties, editor info, hidden layers, and unnecessary system IDs.
+   - Flatten the node tree: Remove meaningless groups or wrapper frames (e.g., a group wrapping a single text block) to create a cleaner, semantic HTML/DOM structure.
+   - **Crucial Directive**: "Focus purely on visual rendering based on the refined data."
+2. **Translate `get_design_context` safely**:
    - The output often includes Tailwind or raw JSX. **Do not copy it directly.** Extract the values only.
    - For `var(--token, fallback)`: **Use the fallback value.**
    - Unregistered Figma variables like `var(--surface/...)` must not appear in the final code.
-2. **Units and Typography**:
+3. **Units and Typography**:
    - Convert all `px` to `rem` (assume `16px = 1rem`).
    - Extract `font-weight`, `font-size`, `line-height`, and `letter-spacing` from `Font(...)` comments.
    - Normalize `font-weight: normal` to `400` and `font-weight: bold` to `700`.
-3. **Asset & Icon Rules**:
+4. **Asset & Icon Rules**:
    - Never use Figma local asset URLs (e.g., `http://localhost:3845/...`).
    - **Substitution Priority**:
      1. MUI Icons (if standard icon)
      2. Inline SVG (if custom icon missing from MUI)
      3. CSS `background-image` with inline SVG (for decorative assets only).
-4. **Clean Dependencies**:
+5. **Clean Dependencies**:
    - Explicitly remove `data-node-id`, `data-name`, and Tailwind classes (unless the project strictly mandates Tailwind, in which case confirm before proceeding) from the final generated code.
 
 ## Phase 5: Task Decomposition
