@@ -39,6 +39,12 @@ const Sidebar: React.FC = () => {
         >
           figma.page.3
         </button>
+        <button 
+          className={`nav-btn ${activePage === 'figma.page.4' ? 'active' : ''}`}
+          onClick={() => setActivePage('figma.page.4')}
+        >
+          figma.page.4
+        </button>
       </nav>
     </aside>
   );

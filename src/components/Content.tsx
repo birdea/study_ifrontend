@@ -4,6 +4,7 @@ import { activePageAtom } from '../store';
 import FigmaPage1 from './figma-page-1/FigmaPage1';
 import FigmaPage2 from './figma-page-2/FigmaPage2';
 import FigmaPage3 from './figma-page-3/FigmaPage3';
+import FigmaPage4 from './figma-page-4/FigmaPage4';
 const Content: React.FC = () => {
   const activePage = useAtomValue(activePageAtom);
   const [countdown, setCountdown] = useState<number>(5);
@@ -55,6 +56,10 @@ const Content: React.FC = () => {
 
   if (activePage === 'figma.page.3') {
     return <FigmaPage3 />;
+  }
+
+  if (activePage === 'figma.page.4') {
+    return <FigmaPage4 />;
   }
 
   return (
