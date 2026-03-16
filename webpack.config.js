@@ -9,7 +9,7 @@ module.exports = {
     publicPath: 'auto',
   },
   devServer: {
-    port: 3000,
+    port: 3300,
     historyApiFallback: true,
     hot: true,
   },
