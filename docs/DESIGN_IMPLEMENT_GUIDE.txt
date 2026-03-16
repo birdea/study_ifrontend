@@ -1,0 +1,117 @@
+# Figma 구현 보완 가이드
+
+이 문서는 `gba-dev-guide`를 대체하지 않는다.
+기본 구현 규칙은 아래 문서를 따르고, 여기에는 **기존 가이드에 없는 Figma MCP 실무 보완 규칙만** 정리한다.
+
+## 먼저 따를 기본 가이드
+
+- `gba-dev-guide/CLAUDE.md`
+- `gba-dev-guide/docs/dev-guide/figma-workflow.md`
+- `gba-dev-guide/docs/dev-guide/component-guide.md`
+- `gba-dev-guide/docs/design-guide/html-guide.md`
+- `gba-dev-guide/docs/design-guide/css-guide.md`
+- 데이터 바인딩이 있으면 `gba-dev-guide/docs/dev-guide/api-service-guide.md`, `gba-dev-guide/docs/dev-guide/state-management-guide.md`
+- API 로딩 UI가 있으면 `gba-dev-guide/docs/design-guide/skeleton-ui-guide.md`
+
+---
+
+## 1. Figma MCP 호출 규칙
+
+Figma 링크를 받으면 URL에서 `fileKey`, `nodeId`를 추출하고 아래 3개를 모두 사용한다.
+
+| 순서 | 도구 | 목적 |
+|---|---|---|
+| 1 | `get_screenshot` | 최종 시각 목표 확인 |
+| 2 | `get_metadata` | 구조, 계층, 좌표, 분할 기준 확인 |
+| 3 | `get_design_context` | 색상, 폰트, 간격 등 수치 추출 |
+
+- `get_design_context`만 보고 구현하지 않는다.
+- `get_screenshot`는 구현 전 전체상 파악과 구현 후 대조 검증에 모두 사용한다.
+
+## 2. 큰 프레임 분할 규칙
+
+`get_design_context` 응답이 길어질 수 있으므로 `get_metadata`로 먼저 복잡도를 판단한다.
+
+| metadata 노드 수 | 처리 방식 |
+|---|---|
+| 30개 이하 | 전체 프레임 1회 호출 |
+| 31~60개 | 최상위 자식 frame 기준 2~3개 분할 권장 |
+| 61개 이상 | 최상위 자식 frame 기준 분할 필수 |
+
+분할 시에는 아래 순서를 고정한다.
+
+1. `get_screenshot` 1회
+2. `get_metadata` 1회
+3. 최상위 자식 frame별로 `get_design_context` 호출
+4. 각 섹션을 `호출 → 값 추출 → 구현 → 다음 섹션` 순서로 처리
+
+한 번에 모든 섹션의 `design_context`를 쌓아두지 않는다.
+
+## 3. MCP 응답 무결성 검사
+
+아래 징후가 있으면 구현을 진행하지 않는다.
+
+- `get_design_context` JSX가 중간에 끊김
+- `get_design_context` 함수/반환부가 끝나지 않음
+- `get_metadata` XML이 중간에 끊김
+- MCP 도구가 에러를 반환함
+
+이 경우에는 하위 섹션 `nodeId`를 정리해 사용자에게 분할 요청한다.
+잘린 응답으로 구현을 계속하면 스타일 누락과 레이아웃 오차가 발생한다.
+
+## 4. 데이터 해석 우선순위
+
+충돌 시 우선순위는 아래와 같다.
+
+`get_screenshot` > `get_design_context` > `get_metadata`
+
+적용 원칙:
+
+- 전체 배치, 시각적 균형, 섹션 간 여백 판단은 `get_screenshot` 우선
+- 색상, 폰트, radius, border, gap 같은 수치는 `get_design_context` 우선
+- DOM 계층, 재사용 후보, 분할 기준은 `get_metadata` 우선
+
+좌표 해석 보조 규칙:
+
+- 자식들의 `x`가 같으면 column 배치 후보로 본다
+- 자식들의 `y`가 같으면 row 배치 후보로 본다
+- 부모 대비 좌우 여백이 같으면 중앙 정렬 후보로 본다
+
+## 5. `get_design_context` 변환 규칙
+
+`get_design_context` 출력은 React + Tailwind 형태일 수 있으므로 복사하지 말고 값만 옮긴다.
+
+핵심 변환:
+
+- `var(--token, fallback)` 형태는 **fallback 값만 사용**
+- px 값은 `16px = 1rem` 기준으로 rem 변환
+- `Font(...)` 주석이 있으면 `font-weight`, `font-size`, `line-height`, `letter-spacing` 추출
+- `font-weight: normal|bold`는 각각 `400`, `700`으로 정규화
+
+특히 아래 산출물은 최종 코드에 남기지 않는다.
+
+- Tailwind 클래스명
+- `data-node-id`, `data-name`
+- `http://localhost:3845` 또는 이에 준하는 Figma MCP 로컬 asset URL
+- 프로젝트에 정의되지 않은 `var(--surface/...)`, `var(--onsurface/...)` 참조
+
+## 6. 아이콘/에셋 치환 규칙
+
+Figma MCP가 반환한 로컬 이미지 URL은 그대로 사용하지 않는다.
+
+우선순위:
+
+1. MUI 아이콘으로 대체
+2. 동일 아이콘이 없으면 인라인 SVG로 대체
+3. 장식성 에셋만 필요한 경우 CSS background SVG 사용
+
+아이콘 선택은 스크린샷의 실제 형태와 의미를 기준으로 판단한다.
+
+## 7. 최종 검증 체크리스트
+
+- 스크린샷과 주요 레이아웃, 간격, 정렬이 시각적으로 일치하는가
+- Tailwind 클래스명이 제거되었는가
+- Figma 메타 속성(`data-node-id`, `data-name`)이 제거되었는가
+- 로컬 asset URL(`localhost:3845`)이 제거되었는가
+- 미정의 CSS 변수가 남아 있지 않은가
+- 분할 구현한 섹션들이 최종 화면에서 자연스럽게 이어지는가
