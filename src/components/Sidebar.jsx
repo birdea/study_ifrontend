@@ -16,6 +16,18 @@ const Sidebar = ({ isFolded, onPageChange, activePage }) => {
         >
           Good Bye
         </button>
+        <button 
+          className={`nav-btn ${activePage === 'figma1' ? 'active' : ''}`}
+          onClick={() => onPageChange('figma1')}
+        >
+          figma1
+        </button>
+        <button 
+          className={`nav-btn ${activePage === 'figma2' ? 'active' : ''}`}
+          onClick={() => onPageChange('figma2')}
+        >
+          figma2
+        </button>
       </nav>
     </aside>
   );

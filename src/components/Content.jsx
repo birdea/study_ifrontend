@@ -43,6 +43,22 @@ const Content = ({ activePage }) => {
     );
   }
 
+  if (activePage === 'figma1') {
+    return (
+      <div className="centered-content">
+        <h1>the result of figma 1 process</h1>
+      </div>
+    );
+  }
+
+  if (activePage === 'figma2') {
+    return (
+      <div className="centered-content">
+        <h1>the result of figma 2 process</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="centered-content">
       <p>Select a page from the sidebar</p>
