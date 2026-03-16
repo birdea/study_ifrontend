@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { activePageAtom } from '../store';
-
+import FigmaPage1 from './figma-page-1/FigmaPage1';
 const Content: React.FC = () => {
   const activePage = useAtomValue(activePageAtom);
   const [countdown, setCountdown] = useState<number>(5);
@@ -44,11 +44,7 @@ const Content: React.FC = () => {
   }
 
   if (activePage === 'figma.page.1') {
-    return (
-      <div className="centered-content">
-        <h1>the result of figma.page.1 process</h1>
-      </div>
-    );
+    return <FigmaPage1 />;
   }
 
   if (activePage === 'figma.page.2') {
