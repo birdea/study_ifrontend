@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { activePageAtom } from '../store';
 
-const Content = ({ activePage }) => {
-  const [countdown, setCountdown] = useState(5);
+const Content: React.FC = () => {
+  const activePage = useAtomValue(activePageAtom);
+  const [countdown, setCountdown] = useState<number>(5);
 
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout;
     if (activePage === 'bye') {
       setCountdown(5);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            // In a real browser, this would try to close the tab, 
-            // but for security reasons window.close() only works on windows opened by script.
-            // We can simulate it by showing a "Page Closed" message or redirecting.
             window.alert('Page will close now (Simulated)');
             window.location.href = 'about:blank';
             return 0;

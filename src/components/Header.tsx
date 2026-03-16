@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
     <header className="status-layer">
       <div className="logo">bd creative study space</div>

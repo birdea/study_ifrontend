@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useAtom } from 'jotai';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Content from './components/Content';
+import { isSidebarFoldedAtom } from './store';
 import './styles/global.scss';
 import './styles/layout.scss';
 
-function App() {
-  const [isFolded, setIsFolded] = useState(false);
-  const [activePage, setActivePage] = useState('hello');
+const App: React.FC = () => {
+  const [isFolded, setIsFolded] = useAtom(isSidebarFoldedAtom);
 
   const toggleSidebar = () => {
     setIsFolded(!isFolded);
@@ -17,11 +18,7 @@ function App() {
     <div className="app-container">
       <Header />
       <div className="main-layout">
-        <Sidebar 
-          isFolded={isFolded} 
-          onPageChange={setActivePage} 
-          activePage={activePage} 
-        />
+        <Sidebar />
         <main className="content-layer">
           <button className="toggle-btn" onClick={toggleSidebar}>
             {isFolded ? (
@@ -34,7 +31,7 @@ function App() {
               </svg>
             )}
           </button>
-          <Content activePage={activePage} />
+          <Content />
         </main>
       </div>
     </div>
